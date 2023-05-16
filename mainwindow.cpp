@@ -225,6 +225,7 @@ MainWindow::MainWindow(QWidget *parent)
     timer = new QTimer(this);
 
     initCams();
+    initFrameProc();
 
 
     openCamera();
@@ -345,7 +346,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
 
 void MainWindow::on_pushButton_clicked()
 {
