@@ -72,6 +72,12 @@ FrameProcessingInfo FrameProc[2];
 
 //Other global declarations
 Scalar col = Scalar(0, 255, 0); //Color for drawing on frame
+int save_placeholder[4] = {0};
+string headers[3][1] = {{"Right Calibration"}, {"Left Calibration"}, {"Test Data"}};
+int step = 1;
+int headerwritten = 0;
+
+ofstream Output_file;
 
 
 //Functions to set up cameras
@@ -231,6 +237,44 @@ MainWindow::MainWindow(QWidget *parent)
     openCamera();
 }
 
+void writeToFile(int data[4]){
+    if (headerwritten == 0){
+        if (step == 1){
+            //Right Cal so put header
+            Output_file << headers[0][0] << endl;
+        }
+        else if (step == 2){
+            //Left Cal so put header
+            Output_file << headers[1][0] << endl;
+        }
+        else if (step == 3){
+            //Testing so put header
+            Output_file << headers[2][0] << endl;
+        }
+        else{
+            printf("How did you get here?\n");
+            cout << "Step: " << step << endl;
+        }
+        headerwritten = 1;
+    }
+    Output_file << save_placeholder[0] << " " << save_placeholder[1] << " " << save_placeholder[2] << " " << save_placeholder[3] << " " << endl;
+}
+
+void savePositions(PositionData &pd, int eye){
+    if (eye == 0){
+        //Right eye, so fill start of matrix
+        save_placeholder[0] = pd.X_Pos;
+        save_placeholder[1] = pd.Y_Pos;
+    }
+    else{
+        //Left Eye, so fill end of matrix
+        save_placeholder[2] = pd.X_Pos;
+        save_placeholder[3] = pd.Y_Pos;
+        cout << save_placeholder[0] << " " << save_placeholder[1] << " " << save_placeholder[2] << " " << save_placeholder[3] << " " << endl;
+        writeToFile(save_placeholder);
+    }
+}
+
 void MainWindow::openCamera(){
     qDebug() << "Open Stream";
     connect(timer, SIGNAL(timeout()), this, SLOT(updateFrame()));
@@ -300,7 +344,8 @@ void MainWindow::updateFrame(){
         pd.Y_Pos = c[1]+Y;
         pd.Radius = c[2];
 
-        //savePositions(pd);
+        //savePositions(pd, i);
+
         //Draw Circles on Black and White
         circle(bpcIMG, Point(pd.X_Pos, pd.Y_Pos), 1, col,1,LINE_8);
         circle(bpcIMG, Point(pd.X_Pos, pd.Y_Pos), pd.Radius, col,1,LINE_8);
