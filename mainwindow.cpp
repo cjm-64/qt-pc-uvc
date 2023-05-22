@@ -227,7 +227,7 @@ MainWindow::MainWindow(QWidget *parent)
     initCams();
     initFrameProc();
 
-
+    ColorOrBW = 1;
     openCamera();
 }
 
@@ -296,8 +296,8 @@ void MainWindow::updateFrame(){
             c = circles[i];
         }
 
-        pd.X_Pos = c[0]+X;
-        pd.Y_Pos = c[1]+Y;
+        pd.X_Pos = c[0];
+        pd.Y_Pos = c[1];
         pd.Radius = c[2];
 
         //savePositions(pd);
