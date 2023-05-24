@@ -77,7 +77,7 @@ string headers[3][1] = {{"Right Calibration"}, {"Left Calibration"}, {"Test Data
 int step = 1;
 int headerwritten = 0;
 
-ofstream Output_file;
+ofstream Output_file ("output.txt");
 
 
 //Functions to set up cameras
@@ -237,7 +237,7 @@ MainWindow::MainWindow(QWidget *parent)
     openCamera();
 }
 
-void writeToFile(int data[4]){
+void writeToFile(){
     if (headerwritten == 0){
         if (step == 1){
             //Right Cal so put header
@@ -271,7 +271,7 @@ void savePositions(PositionData &pd, int eye){
         save_placeholder[2] = pd.X_Pos;
         save_placeholder[3] = pd.Y_Pos;
         cout << save_placeholder[0] << " " << save_placeholder[1] << " " << save_placeholder[2] << " " << save_placeholder[3] << " " << endl;
-        writeToFile(save_placeholder);
+        writeToFile();
     }
 }
 
@@ -304,6 +304,7 @@ void MainWindow::updateFrame(){
         else{
             printf("got frame");
         }
+
 
         //Allocate buffers for conversions
         int frameW = frame->width;
@@ -340,11 +341,11 @@ void MainWindow::updateFrame(){
             c = circles[i];
         }
 
-        pd.X_Pos = c[0]+X;
-        pd.Y_Pos = c[1]+Y;
+        pd.X_Pos = c[0];
+        pd.Y_Pos = c[1];
         pd.Radius = c[2];
 
-        //savePositions(pd, i);
+        savePositions(pd, i);
 
         //Draw Circles on Black and White
         circle(bpcIMG, Point(pd.X_Pos, pd.Y_Pos), 1, col,1,LINE_8);
@@ -372,7 +373,7 @@ void MainWindow::updateFrame(){
             else{
                 //Right Eye BW frame
                 bpcIMG.copyTo(final_image);
-            }
+            }git show --summary
             ui->LeftEye->setPixmap(QPixmap::fromImage(QImage((unsigned char*) final_image.data, final_image.cols, final_image.rows, final_image.step, QImage::Format_RGB888)));
         }
 
