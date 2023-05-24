@@ -36,7 +36,7 @@ int L_max_rad = 50; //Radius value
 int Step = 0; //Define the step
 int DisplaySelector = 0; //Select which display to use; 0 = w/Panel 1 = w/o
 int DataSavingFlag = 0; //Where to save the data; 0 = None, 1 = CalR, 2 = CalL 3 = Full Test
-int ColorOrBW = 0; //Color Video or BW Video; Color = 0, BW = 1
+int ColorOrBW = 1; //Color Video or BW Video; Color = 0, BW = 1
 
 
 //Tracking
