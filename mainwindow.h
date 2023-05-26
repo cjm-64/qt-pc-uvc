@@ -28,5 +28,7 @@ private slots:
     void openCamera();
     void updateFrame();
     void on_pushButton_clicked();
+    void on_GreyButton_clicked();
+    void on_BWButton_clicked();
 };
 #endif // MAINWINDOW_H

@@ -77,7 +77,7 @@ string headers[3][1] = {{"Right Calibration"}, {"Left Calibration"}, {"Test Data
 int step = 1;
 int headerwritten = 0;
 
-ofstream Output_file;
+ofstream Output_file ("output.txt");
 
 
 //Functions to set up cameras
@@ -237,7 +237,7 @@ MainWindow::MainWindow(QWidget *parent)
     openCamera();
 }
 
-void writeToFile(int data[4]){
+void writeToFile(){
     if (headerwritten == 0){
         if (step == 1){
             //Right Cal so put header
@@ -271,7 +271,7 @@ void savePositions(PositionData &pd, int eye){
         save_placeholder[2] = pd.X_Pos;
         save_placeholder[3] = pd.Y_Pos;
         cout << save_placeholder[0] << " " << save_placeholder[1] << " " << save_placeholder[2] << " " << save_placeholder[3] << " " << endl;
-        writeToFile(save_placeholder);
+        writeToFile();
     }
 }
 
@@ -305,6 +305,7 @@ void MainWindow::updateFrame(){
             printf("got frame");
         }
 
+
         //Allocate buffers for conversions
         int frameW = frame->width;
         int frameH = frame->height;
@@ -323,9 +324,9 @@ void MainWindow::updateFrame(){
         }
         Mat placeholder(bgr->height, bgr->width, CV_8UC3, bgr->data); //Create MAT and fill with frame data
         Mat flipped;
-        placeholder.copyTo(flipped); //Copy frame to new MAT. idk why you need to do this but you do ¯\_(ツ)_/¯
+        placeholder.copyTo(image); //Copy frame to new MAT. idk why you need to do this but you do ¯\_(ツ)_/¯
 
-        flip(flipped, image, 0); //Flip image
+//        flip(flipped, image, 0); //Flip image
 
         Mat grayIMG, binaryIMG, bpcIMG; //Create new Mats to to image processing steps
         cvtColor(image, grayIMG, COLOR_BGR2GRAY); //Convert to grayscale
@@ -340,11 +341,11 @@ void MainWindow::updateFrame(){
             c = circles[i];
         }
 
-        pd.X_Pos = c[0]+X;
-        pd.Y_Pos = c[1]+Y;
+        pd.X_Pos = c[0];
+        pd.Y_Pos = c[1];
         pd.Radius = c[2];
 
-        //savePositions(pd, i);
+        savePositions(pd, i);
 
         //Draw Circles on Black and White
         circle(bpcIMG, Point(pd.X_Pos, pd.Y_Pos), 1, col,1,LINE_8);
@@ -356,11 +357,11 @@ void MainWindow::updateFrame(){
         if (i == 0){
             if (ColorOrBW == 0){
                 //Right Eye Color frame
-                image.copyTo(final_image);
+                flip(image, final_image, 0);
             }
             else{
                 //Right Eye BW frame
-                bpcIMG.copyTo(final_image);
+                flip(bpcIMG, final_image, 0);
             }
             ui->RightEye->setPixmap(QPixmap::fromImage(QImage((unsigned char*) final_image.data, final_image.cols, final_image.rows, final_image.step, QImage::Format_RGB888)));
         }
@@ -377,12 +378,12 @@ void MainWindow::updateFrame(){
         }
 
         //Free memory
-        flipped.release();
-        image.release();
-        placeholder.release();
-        grayIMG.release();
-        binaryIMG.release();
-        bpcIMG.release();
+//        flipped.release();
+//        image.release();
+//        placeholder.release();
+//        grayIMG.release();
+//        binaryIMG.release();
+//        bpcIMG.release();
         uvc_free_frame(bgr);
     }
 }
@@ -401,5 +402,17 @@ void MainWindow::on_pushButton_clicked()
     }
 
     close();
+}
+
+
+void MainWindow::on_GreyButton_clicked()
+{
+    ColorOrBW = 0;
+}
+
+
+void MainWindow::on_BWButton_clicked()
+{
+    ColorOrBW = 1;
 }
 
