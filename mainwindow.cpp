@@ -373,7 +373,7 @@ void MainWindow::updateFrame(){
             else{
                 //Right Eye BW frame
                 bpcIMG.copyTo(final_image);
-            }
+            }git show --summary
             ui->LeftEye->setPixmap(QPixmap::fromImage(QImage((unsigned char*) final_image.data, final_image.cols, final_image.rows, final_image.step, QImage::Format_RGB888)));
         }
 
